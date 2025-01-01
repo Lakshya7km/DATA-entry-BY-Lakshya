@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution Data Collection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #studentInputs {
+            margin-top: 20px;
+        }
+        .student-entry {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Distribution Data Collection</h1>
+    <div class="form-group">
+        <label for="officeCenter">कार्यालय संकुल केंद्र:</label>
+        <input type="text" id="officeCenter" required>
+    </div>
+    <div class="form-group">
+        <label for="schoolName">शाला:</label>
+        <input type="text" id="schoolName" required>
+    </div>
+    <div class="form-group">
+        <label for="headerDate">दिनांक (Header Date):</label>
+        <input type="text" id="headerDate" required>
+    </div>
+    <div class="form-group">
+        <label for="numStudents">Number of students:</label>
+        <input type="number" id="numStudents" min="1" required>
+    </div>
+    <div class="form-group">
+        <label for="remainingQuantity">शेष (Remaining Quantity):</label>
+        <input type="number" id="remainingQuantity" min="1" required>
+    </div>
+    <button onclick="generateStudentInputs()">Generate Student Entries</button>
+    
+    <div id="studentInputs"></div>
+    <div id="downloadSection" style="display: none;">
+        <button onclick="generateAndDownloadCSV()">Download CSV</button>
+    </div>
+
+    <script>
+        let studentData = [];
+
+        function generateStudentInputs() {
+            const numStudents = parseInt(document.getElementById('numStudents').value);
+            const remainingQty = parseInt(document.getElementById('remainingQuantity').value);
+            
+            if (!validateInitialInputs(numStudents, remainingQty)) {
+                return;
+            }
+
+            const container = document.getElementById('studentInputs');
+            container.innerHTML = '';
+
+            for (let i = 0; i < numStudents; i++) {
+                const studentDiv = document.createElement('div');
+                studentDiv.className = 'student-entry';
+                studentDiv.innerHTML = `
+                    <h3>Student ${i + 1}</h3>
+                    <div class="form-group">
+                        <label for="name${i}">लाभान्वित विद्यार्थियों का नाम:</label>
+                        <input type="text" id="name${i}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date${i}">दिनांक:</label>
+                        <input type="text" id="date${i}" required>
+                    </div>
+                `;
+                container.appendChild(studentDiv);
+            }
+
+            document.getElementById('downloadSection').style.display = 'block';
+        }
+
+        function validateInitialInputs(numStudents, remainingQty) {
+            if (!document.getElementById('officeCenter').value ||
+                !document.getElementById('schoolName').value ||
+                !document.getElementById('headerDate').value ||
+                !numStudents ||
+                !remainingQty) {
+                alert('Please fill all fields');
+                return false;
+            }
+
+            if (numStudents <= 0) {
+                alert('Number of students must be greater than 0');
+                return false;
+            }
+
+            if (remainingQty < numStudents) {
+                alert('Warning: Remaining quantity is less than number of students!');
+            }
+
+            return true;
+        }
+
+        function generateAndDownloadCSV() {
+            const numStudents = parseInt(document.getElementById('numStudents').value);
+            const officeCenter = document.getElementById('officeCenter').value;
+            const schoolName = document.getElementById('schoolName').value;
+            const remainingQty = parseInt(document.getElementById('remainingQuantity').value);
+
+            // Collect all student data
+            let csvContent = 'कार्यालय संकुल केंद्र,शाला,दिनांक,क्रमांक,लाभान्वित विद्यार्थियों का नाम,वितरण मात्रा,शेष\n';
+
+            for (let i = 0; i < numStudents; i++) {
+                const name = document.getElementById(`name${i}`).value;
+                const date = document.getElementById(`date${i}`).value;
+
+                if (!name || !date) {
+                    alert('Please fill all student information');
+                    return;
+                }
+
+                const remaining = remainingQty - i;
+                csvContent += `${officeCenter},${schoolName},${date},${i + 1},${name},1,${remaining}\n`;
+            }
+
+            // Create and trigger download
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '');
+            const filename = `distribution_data_${timestamp}.csv`;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            const link = document.createElement('a');
+            if (navigator.msSaveBlob) { // IE 10+
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+</body>
+</html>
