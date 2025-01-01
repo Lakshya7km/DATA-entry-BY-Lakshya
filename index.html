@@ -3,181 +3,555 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribution Data Collection</title>
-    <style>
+    <title>मिलेट्स वितरण डेटा संग्रहण</title>
+   <style>
+    :root {
+        --primary-color: #4CAF50;
+        --primary-hover: #45a049;
+        --background-color: #f8f9fa;
+        --card-background: rgba(255, 255, 255, 0.95);
+        --text-color: #333;
+        --border-radius: 12px;
+        --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        --header-background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: var(--background-color) url('https://www.pexels.com/photo/black-chalk-board-1581511/'); /* Replace with correct image URL */
+        color: var(--text-color);
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Header Enhancement */
+    h1, h2 {
+        text-align: center;
+        color: white;
+        margin-bottom: 1.5rem;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 1rem;
+        background: var(--header-background);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: background 0.3s ease-in-out;
+    }
+
+    h1:hover, h2:hover {
+        background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+    }
+
+    .form-section {
+        background: var(--card-background);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--box-shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .form-section:hover {
+        transform: translateY(-5px);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #2c3e50;
+        font-size: 1rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    button {
+        width: 100%;
+        padding: 12px 24px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .entry-section {
+        background: var(--card-background);
+        margin-top: 20px;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+
+    #studentsRemaining {
+        text-align: center;
+        margin-top: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    #downloadButton {
+        background-color: #2196F3;
+        margin-top: 1rem;
+    }
+
+    #downloadButton:hover {
+        background-color: #1976D2;
+    }
+
+    /* Footer Styles */
+    .about-developer {
+        margin-top: 3rem;
+        text-align: center;
+        background: rgba(76, 175, 80, 0.1); /* Light green background */
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+
+    .about-developer h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .about-developer img {
+        border: none;
+        transition: transform 0.3s ease;
+    }
+
+    .about-developer img:hover {
+        transform: scale(1.05);
+    }
+
+    .steps-instructions {
+        background-color: #fff;
+        color: #333;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: 'Arial', sans-serif;
+    }
+
+    .steps-instructions h2 {
+        text-align: center;
+        background: linear-gradient(to right, #ff66b2, #000000); /* Pink to Black gradient */
+        color: white;
+        padding: 10px 0;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+    }
+
+    .steps-instructions ol {
+        list-style-type: decimal;
+        margin-left: 20px;
+    }
+
+    .steps-instructions li {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        line-height: 1.6;
+    }
+
+    .steps-instructions em {
+        color: #555;
+        font-style: italic;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 1rem;
+    }
+
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    /* Responsive Styling */
+    @media screen and (max-width: 768px) {
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, button {
-            width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
         }
+
+        .container {
+            padding: 15px;
+            max-width: 100%;
+        }
+
+        h1, h2 {
+            font-size: 2rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        input {
+            padding: 10px;
+        }
+
         button {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 10px 20px;
         }
-        button:hover {
-            background-color: #45a049;
+
+        .about-developer {
+            padding: 1.5rem;
         }
-        .entry-section {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 4px;
+
+        .steps-instructions h2 {
+            font-size: 1.5rem;
         }
-    </style>
+
+        table {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        h1, h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-section {
+            padding: 1rem;
+        }
+
+        input {
+            padding: 8px;
+        }
+
+        button {
+            font-size: 0.8rem;
+            padding: 8px 16px;
+        }
+
+        .about-developer {
+            padding: 1rem;
+        }
+
+        .steps-instructions h2 {
+            font-size: 1.3rem;
+        }
+
+        table {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+
+
 </head>
 <body>
-    <h1>Distribution Data Collection</h1>
-    <div class="form-group">
-        <label for="officeCenter">कार्यालय संकुल केंद्र:</label>
-        <input type="text" id="officeCenter" required>
-    </div>
-    <div class="form-group">
-        <label for="schoolName">शाला:</label>
-        <input type="text" id="schoolName" required>
-    </div>
-    <div class="form-group">
-        <label for="headerDate">दिनांक (Header Date):</label>
-        <input type="date" id="headerDate" required>
-    </div>
-    <div class="form-group">
-        <label for="remainingQuantity">शेष (Remaining Quantity):</label>
-        <input type="number" id="remainingQuantity" min="1" required>
-    </div>
-    <button onclick="initializeSession()">Start Data Collection</button>
+    <h1>मिलेट्स वितरण डेटा संग्रहण</h1>
 
-    <div id="dataEntrySection" class="entry-section" style="display: none;">
+    <!-- Header Section -->
+    <div id="headerSection">
         <div class="form-group">
-            <label for="entryDate">दिनांक:</label>
+            <label for="officeCenter">कार्यालय संकुल केंद्र:</label>
+            <input type="text" id="officeCenter" placeholder="Enter Office Center Name" required>
+        </div>
+        <div class="form-group">
+            <label for="schoolName">शाला:</label>
+            <input type="text" id="schoolName" placeholder="Enter School Name" required>
+        </div>
+        <div class="form-group">
+            <label for="headerDate">दिनांक (Header Date):</label>
+            <input type="date" id="headerDate" required>
+        </div>
+        <div class="form-group">
+            <label for="remainingQuantity">शेष (मिलेट्स की शेष मात्रा):</label>
+            <input type="number" id="remainingQuantity" min="1" placeholder="मिलेट्स की शेष मात्रा" required>
+        </div>
+        <button onclick="initializeSession()">डेटा संग्रहण प्रारंभ करें</button>
+    </div>
+
+    <!-- Date and Batch Section -->
+    <div id="dateSection" class="hidden entry-section">
+        <div class="form-group">
+            <label for="entryDate">कृपया दिनांक दर्ज करें:</label>
             <input type="date" id="entryDate" required>
         </div>
         <div class="form-group">
-            <label for="beneficiaryName">लाभान्वित विद्यार्थियों का नाम:</label>
-            <input type="text" id="beneficiaryName" required>
+            <label for="numStudents">कितने विद्यार्थियों का डेटा दर्ज करना है?</label>
+            <input type="number" id="numStudents" min="1" placeholder="Enter Number of Students" required>
         </div>
-        <button onclick="addEntry()">Add Entry</button>
+        <button onclick="startBatch()">Submit Date and Students</button>
     </div>
-    <button id="downloadButton" style="display: none;" onclick="downloadCSV()">Download CSV</button>
+
+    <!-- Student Entry Section -->
+    <div id="studentSection" class="hidden entry-section">
+        <div class="form-group">
+            <label for="beneficiaryName">लाभान्वित विद्यार्थियों का नाम:</label>
+            <input type="text" id="beneficiaryName" placeholder="Enter Beneficiary Name" required>
+        </div>
+        <button onclick="addStudent()">Add Student</button>
+        <p id="studentsRemaining"></p>
+    </div>
+
+    <button id="downloadButton" class="hidden" onclick="downloadCSV()">Download CSV</button>
 
     <script>
-        let dataCollection = [];
-        let remainingQuantity = 0;
+    let dataCollection = [];
+    let remainingQuantity = 0;
+    let currentDate = "";
+    let studentsRemaining = 0;
 
-        function initializeSession() {
-            const officeCenter = document.getElementById("officeCenter").value.trim();
-            const schoolName = document.getElementById("schoolName").value.trim();
-            const headerDate = document.getElementById("headerDate").value;
-            remainingQuantity = parseInt(document.getElementById("remainingQuantity").value);
+    // सत्र की शुरुआत
+    function initializeSession() {
+        const officeCenter = document.getElementById("officeCenter").value.trim();
+        const schoolName = document.getElementById("schoolName").value.trim();
+        const headerDate = document.getElementById("headerDate").value;
+        remainingQuantity = parseInt(document.getElementById("remainingQuantity").value);
 
-            if (!officeCenter || !schoolName || !headerDate || remainingQuantity <= 0) {
-                alert("कृपया सभी फ़ील्ड सही तरीके से भरें।");
-                return;
-            }
-
-            const sessionData = {
-                officeCenter,
-                schoolName,
-                headerDate,
-                remainingQuantity,
-                entries: [],
-            };
-            localStorage.setItem("distributionSession", JSON.stringify(sessionData));
-            loadSessionData();
+        if (!officeCenter || !schoolName || !headerDate || remainingQuantity <= 0) {
+            alert("कृपया सभी फ़ील्ड सही तरीके से भरें।");
+            return;
         }
 
-        function loadSessionData() {
-            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
-            if (sessionData) {
-                dataCollection = sessionData.entries || [];
-                remainingQuantity = sessionData.remainingQuantity;
-                document.getElementById("dataEntrySection").style.display = "block";
-                document.getElementById("downloadButton").style.display = "block";
-            }
+        localStorage.setItem("distributionSession", JSON.stringify({
+            officeCenter,
+            schoolName,
+            headerDate,
+            remainingQuantity,
+            entries: [],
+        }));
+
+        document.getElementById("headerSection").classList.add("hidden");
+        document.getElementById("dateSection").classList.remove("hidden");
+    }
+
+    // बैच की शुरुआत
+    function startBatch() {
+        const entryDate = document.getElementById("entryDate").value;
+        const numStudents = parseInt(document.getElementById("numStudents").value);
+
+        if (!entryDate || numStudents <= 0) {
+            alert("कृपया सही दिनांक और विद्यार्थियों की संख्या दर्ज करें।");
+            return;
         }
 
-        function addEntry() {
-            const entryDate = document.getElementById("entryDate").value;
-            const beneficiaryName = document.getElementById("beneficiaryName").value.trim();
+        currentDate = entryDate;
+        studentsRemaining = numStudents;
 
-            if (!entryDate || !beneficiaryName) {
-                alert("कृपया दिनांक और लाभार्थी का नाम दर्ज करें।");
-                return;
-            }
+        document.getElementById("dateSection").classList.add("hidden");
+        document.getElementById("studentSection").classList.remove("hidden");
+        document.getElementById("studentsRemaining").innerText = `शेष विद्यार्थी: ${studentsRemaining}`;
+    }
 
-            if (remainingQuantity <= 0) {
-                alert("वितरण के लिए शेष मात्रा समाप्त हो गई है।");
-                return;
-            }
+    // विद्यार्थी जोड़ने की प्रक्रिया
+    function addStudent() {
+        const beneficiaryName = document.getElementById("beneficiaryName").value.trim();
 
-            const serialNumber = dataCollection.length + 1;
-            dataCollection.push({
-                serialNumber,
-                entryDate,
-                beneficiaryName,
-                distributionAmount: 1,
-                remaining: remainingQuantity,
-            });
-
-            remainingQuantity--;
-            updateSession();
-            alert("डेटा सफलतापूर्वक जोड़ा गया।");
+        if (!beneficiaryName) {
+            alert("कृपया लाभार्थी का नाम दर्ज करें।");
+            return;
         }
 
-        function updateSession() {
-            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
-            sessionData.entries = dataCollection;
-            sessionData.remainingQuantity = remainingQuantity;
-            localStorage.setItem("distributionSession", JSON.stringify(sessionData));
+        if (studentsRemaining <= 0) {
+            alert("सभी विद्यार्थियों का डेटा पहले ही दर्ज हो चुका है।");
+            return;
         }
 
-        function downloadCSV() {
-            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
-            if (!sessionData || dataCollection.length === 0) {
-                alert("कोई डेटा उपलब्ध नहीं है।");
-                return;
+        if (remainingQuantity <= 0) {
+            alert("वितरण के लिए शेष मात्रा समाप्त हो गई है।");
+            return;
+        }
+
+        const serialNumber = dataCollection.length + 1;
+        dataCollection.push({
+            serialNumber,
+            entryDate: currentDate,
+            beneficiaryName,
+            distributionAmount: 1,
+            remaining: remainingQuantity,
+        });
+
+        studentsRemaining--;
+        remainingQuantity--;
+
+        document.getElementById("studentsRemaining").innerText = `शेष विद्यार्थी: ${studentsRemaining}`;
+        document.getElementById("beneficiaryName").value = "";
+
+        if (studentsRemaining <= 0) {
+            // चेक करें कि क्या पहले दिनांक के लिए डेटा दर्ज हो चुका है
+            if (confirm(`${currentDate} के लिए सभी डेटा सफलतापूर्वक दर्ज कर लिया गया है। क्या आप दूसरे दिनांक के लिए आगे बढ़ना चाहते हैं?`)) {
+                document.getElementById("studentSection").classList.add("hidden");
+                document.getElementById("dateSection").classList.remove("hidden");
+                document.getElementById("downloadButton").classList.remove("hidden");
             }
+        }
+    }
 
-            // Adding specific header rows as per the Python script
-            let csvContent = `\t\tकार्यालय संकुल केंद्र - ${sessionData.officeCenter}\t\t\n`;
-            csvContent += `\t\tशाला - ${sessionData.schoolName}\t\t\n`;
-            csvContent += `\t\tमिलेट बार/सोयापिनेट चक्की /प्रोटीन बार /मोरेंगा बार की जानकारी (दिनांक - ${sessionData.headerDate} की स्थिति में)\t\t\n\n`;
-            csvContent += `\t\tप्रपत्र -1\t\t\n\n`;
-            csvContent += `\t\tशाला स्तर पर संधारित अभिलेख\t\t\n\n`;
-            csvContent += "क्रमांक,दिनांक,लाभान्वित विद्यार्थियों का नाम,वितरण मात्रा,शेष\n";
-
-            // Adding entry rows
-            dataCollection.forEach((entry) => {
-                csvContent += `${entry.serialNumber},${entry.entryDate},${entry.beneficiaryName},${entry.distributionAmount},${entry.remaining}\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-            const link = document.createElement("a");
-            const timestamp = new Date().toISOString().replace(/[:.]/g, "");
-            link.href = URL.createObjectURL(blob);
-            link.download = `distribution_data_${timestamp}.csv`;
-            link.style.display = "none";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+    // CSV फ़ाइल डाउनलोड करने की प्रक्रिया
+    function downloadCSV() {
+        const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
+        if (!sessionData || dataCollection.length === 0) {
+            alert("कोई डेटा उपलब्ध नहीं है।");
+            return;
         }
 
-        // Load session data on page refresh
-        window.onload = loadSessionData;
-    </script>
+        let csvContent = `"कार्यालय संकुल केंद्र","${sessionData.officeCenter}"\n`;
+        csvContent += `"शाला","${sessionData.schoolName}"\n`;
+        csvContent += `"मिलेट बार/सोयापिनेट चक्की /प्रोटीन बार /मोरेंगा बार की जानकारी (दिनांक - ${sessionData.headerDate} की स्थिति में)"\n\n`;
+        csvContent += `"प्रपत्र -1"\n\n`;
+        csvContent += `"शाला स्तर पर संधारित अभिलेख"\n\n`;
+        csvContent += `"क्रमांक","दिनांक","लाभान्वित विद्यार्थियों का नाम","वितरण मात्रा","शेष"\n`;
+
+        dataCollection.forEach((entry) => {
+            csvContent += `"${entry.serialNumber}","${entry.entryDate}","${entry.beneficiaryName}","${entry.distributionAmount}","${entry.remaining}"\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "");
+        link.href = URL.createObjectURL(blob);
+        link.download = `distribution_data_${timestamp}.csv`;F
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }Fst
+</script>
+<div class="steps-instructions">
+    <h2>मिलेट्स वितरण डेटा संग्रहण Guide</h2>
+    <ol>
+        <li><strong>Step 1:</strong> सत्र की शुरुआत - सबसे पहले, "कार्यालय संकुल केंद्र" और "शाला" की जानकारी भरें। फिर "डेटा संग्रहण प्रारंभ करें" बटन दबाएं। 
+            <br><em>Example: यदि आप PS XYZ स्कूल से हैं, तो 'PS XYZ' का नाम भरें।</em>
+        </li>
+        <li><strong>Step 2:</strong> बैच की शुरुआत - दिनांक और विद्यार्थियों की संख्या भरें और "Submit Date and Students" पर क्लिक करें।
+            <br><em>Example: "2025-01-01" और "50 students" भरें।</em>
+        </li>
+        <li><strong>Step 3:</strong> विद्यार्थी जोड़ने की प्रक्रिया - विद्यार्थी का नाम भरें और "Add Student" बटन पर क्लिक करें।
+            <br><em>Example: "Amit Kumar" का नाम भरकर "Add Student" दबाएं।</em>
+        </li>
+        <li><strong>Step 4:</strong> वितरण तालिका डेटा - PS Dongargaon के तहत "मिलेट बार/सोयापिनेट चक्की /प्रोटीन बार" का वितरण रिकॉर्ड भरें।
+            <br><em>Example: शाला स्तर पर संधारित अभिलेख में निम्नलिखित डेटा भरें:</em>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>क्रमांक</th>
+                        <th>मिलेट बार /सोयपिनेट चक्की का वितरण दिनांक</th>
+                        <th>लाभान्वित विद्यार्थियों का नाम</th>
+                        <th>वितरण मात्रा</th>
+                        <th>शेष</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>19.12.2024</td>
+                        <td>Ananya</td>
+                        <td>1</td>
+                        <td>455</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>19.12.2024</td>
+                        <td>Aarti</td>
+                        <td>1</td>
+                        <td>454</td>
+                    </tr>
+                </tbody>
+            </table>
+        </li>
+        <li><strong>Step 5:</strong> CSV डाउनलोड करें - सारे डेटा को सेव करने के लिए "Download CSV" बटन पर क्लिक करें।
+            <br><em>Example: आप "Download CSV" बटन दबाकर पूरी सूची डाउनलोड कर सकते हैं।</em>
+        </li>
+    </ol>
+</div>
+
+
+<footer>
+    <div class="about-developer" style="text-align: center;">
+        <h3>About Developer</h3>
+        <p>Hello! I'm Lakshya Kumar Mandavi, a CSE student at IIIT Naya Raipur. I'm passionate about Computer Science and excited about the latest tech trends.</p>
+        
+        <!-- Developer Photo -->
+        <img src="https://media.licdn.com/dms/image/v2/D4D03AQGW0Jjy22WQJg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1726854798533?e=2147483647&v=beta&t=2OdkIWD55FBMvbFq-Dv2IAdjalpCaRXFG_R33RYEnS8" alt="LinkedIn Profile Picture" class="social-icon" style="border-radius: 50%; width: 120px; height: 120px; margin-bottom: 20px;" />
+
+        <div class="social-links">
+            <!-- LinkedIn Link -->
+            <a href="https://in.linkedin.com/in/lakshya-kumar-mandavi-7836a632a" target="_blank" style="text-decoration: none; margin-right: 15px;">
+                <img src="https://logospng.org/download/linkedin/logo-linkedin-icon-1536.png" alt="LinkedIn Logo" class="social-logo" style="width: 30px; height: 30px;" />
+            </a>
+            <!-- Instagram Link -->
+            <a href="https://www.instagram.com/lakshya_07mk/" target="_blank" style="text-decoration: none; margin-left: 15px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo" class="social-logo" style="width: 30px; height: 30px;" />
+            </a>
+ <p style="font-size: 16px; margin-top: 10px;">Follow me on</p>
+        </div>
+    </div>
+</footer>
+
+
 </body>
 </html>
