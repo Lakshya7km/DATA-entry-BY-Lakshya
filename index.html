@@ -18,9 +18,9 @@
             display: block;
             margin-bottom: 5px;
         }
-        input {
+        input, button {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -28,21 +28,15 @@
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
             background-color: #45a049;
         }
-        #studentInputs {
+        .entry-section {
             margin-top: 20px;
-        }
-        .student-entry {
             border: 1px solid #ddd;
             padding: 10px;
-            margin-bottom: 10px;
             border-radius: 4px;
         }
     </style>
@@ -59,118 +53,131 @@
     </div>
     <div class="form-group">
         <label for="headerDate">दिनांक (Header Date):</label>
-        <input type="text" id="headerDate" required>
-    </div>
-    <div class="form-group">
-        <label for="numStudents">Number of students:</label>
-        <input type="number" id="numStudents" min="1" required>
+        <input type="date" id="headerDate" required>
     </div>
     <div class="form-group">
         <label for="remainingQuantity">शेष (Remaining Quantity):</label>
         <input type="number" id="remainingQuantity" min="1" required>
     </div>
-    <button onclick="generateStudentInputs()">Generate Student Entries</button>
-    
-    <div id="studentInputs"></div>
-    <div id="downloadSection" style="display: none;">
-        <button onclick="generateAndDownloadCSV()">Download CSV</button>
+    <button onclick="initializeSession()">Start Data Collection</button>
+
+    <div id="dataEntrySection" class="entry-section" style="display: none;">
+        <div class="form-group">
+            <label for="entryDate">दिनांक:</label>
+            <input type="date" id="entryDate" required>
+        </div>
+        <div class="form-group">
+            <label for="beneficiaryName">लाभान्वित विद्यार्थियों का नाम:</label>
+            <input type="text" id="beneficiaryName" required>
+        </div>
+        <button onclick="addEntry()">Add Entry</button>
     </div>
+    <button id="downloadButton" style="display: none;" onclick="downloadCSV()">Download CSV</button>
 
     <script>
-        let studentData = [];
+        let dataCollection = [];
+        let remainingQuantity = 0;
 
-        function generateStudentInputs() {
-            const numStudents = parseInt(document.getElementById('numStudents').value);
-            const remainingQty = parseInt(document.getElementById('remainingQuantity').value);
-            
-            if (!validateInitialInputs(numStudents, remainingQty)) {
+        function initializeSession() {
+            const officeCenter = document.getElementById("officeCenter").value.trim();
+            const schoolName = document.getElementById("schoolName").value.trim();
+            const headerDate = document.getElementById("headerDate").value;
+            remainingQuantity = parseInt(document.getElementById("remainingQuantity").value);
+
+            if (!officeCenter || !schoolName || !headerDate || remainingQuantity <= 0) {
+                alert("कृपया सभी फ़ील्ड सही तरीके से भरें।");
                 return;
             }
 
-            const container = document.getElementById('studentInputs');
-            container.innerHTML = '';
-
-            for (let i = 0; i < numStudents; i++) {
-                const studentDiv = document.createElement('div');
-                studentDiv.className = 'student-entry';
-                studentDiv.innerHTML = `
-                    <h3>Student ${i + 1}</h3>
-                    <div class="form-group">
-                        <label for="name${i}">लाभान्वित विद्यार्थियों का नाम:</label>
-                        <input type="text" id="name${i}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="date${i}">दिनांक:</label>
-                        <input type="text" id="date${i}" required>
-                    </div>
-                `;
-                container.appendChild(studentDiv);
-            }
-
-            document.getElementById('downloadSection').style.display = 'block';
+            const sessionData = {
+                officeCenter,
+                schoolName,
+                headerDate,
+                remainingQuantity,
+                entries: [],
+            };
+            localStorage.setItem("distributionSession", JSON.stringify(sessionData));
+            loadSessionData();
         }
 
-        function validateInitialInputs(numStudents, remainingQty) {
-            if (!document.getElementById('officeCenter').value ||
-                !document.getElementById('schoolName').value ||
-                !document.getElementById('headerDate').value ||
-                !numStudents ||
-                !remainingQty) {
-                alert('Please fill all fields');
-                return false;
-            }
-
-            if (numStudents <= 0) {
-                alert('Number of students must be greater than 0');
-                return false;
-            }
-
-            if (remainingQty < numStudents) {
-                alert('Warning: Remaining quantity is less than number of students!');
-            }
-
-            return true;
-        }
-
-        function generateAndDownloadCSV() {
-            const numStudents = parseInt(document.getElementById('numStudents').value);
-            const officeCenter = document.getElementById('officeCenter').value;
-            const schoolName = document.getElementById('schoolName').value;
-            const remainingQty = parseInt(document.getElementById('remainingQuantity').value);
-
-            // Collect all student data
-            let csvContent = 'कार्यालय संकुल केंद्र,शाला,दिनांक,क्रमांक,लाभान्वित विद्यार्थियों का नाम,वितरण मात्रा,शेष\n';
-
-            for (let i = 0; i < numStudents; i++) {
-                const name = document.getElementById(`name${i}`).value;
-                const date = document.getElementById(`date${i}`).value;
-
-                if (!name || !date) {
-                    alert('Please fill all student information');
-                    return;
-                }
-
-                const remaining = remainingQty - i;
-                csvContent += `${officeCenter},${schoolName},${date},${i + 1},${name},1,${remaining}\n`;
-            }
-
-            // Create and trigger download
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '');
-            const filename = `distribution_data_${timestamp}.csv`;
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            
-            const link = document.createElement('a');
-            if (navigator.msSaveBlob) { // IE 10+
-                navigator.msSaveBlob(blob, filename);
-            } else {
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+        function loadSessionData() {
+            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
+            if (sessionData) {
+                dataCollection = sessionData.entries || [];
+                remainingQuantity = sessionData.remainingQuantity;
+                document.getElementById("dataEntrySection").style.display = "block";
+                document.getElementById("downloadButton").style.display = "block";
             }
         }
+
+        function addEntry() {
+            const entryDate = document.getElementById("entryDate").value;
+            const beneficiaryName = document.getElementById("beneficiaryName").value.trim();
+
+            if (!entryDate || !beneficiaryName) {
+                alert("कृपया दिनांक और लाभार्थी का नाम दर्ज करें।");
+                return;
+            }
+
+            if (remainingQuantity <= 0) {
+                alert("वितरण के लिए शेष मात्रा समाप्त हो गई है।");
+                return;
+            }
+
+            const serialNumber = dataCollection.length + 1;
+            dataCollection.push({
+                serialNumber,
+                entryDate,
+                beneficiaryName,
+                distributionAmount: 1,
+                remaining: remainingQuantity,
+            });
+
+            remainingQuantity--;
+            updateSession();
+            alert("डेटा सफलतापूर्वक जोड़ा गया।");
+        }
+
+        function updateSession() {
+            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
+            sessionData.entries = dataCollection;
+            sessionData.remainingQuantity = remainingQuantity;
+            localStorage.setItem("distributionSession", JSON.stringify(sessionData));
+        }
+
+        function downloadCSV() {
+            const sessionData = JSON.parse(localStorage.getItem("distributionSession"));
+            if (!sessionData || dataCollection.length === 0) {
+                alert("कोई डेटा उपलब्ध नहीं है।");
+                return;
+            }
+
+            // Adding specific header rows as per the Python script
+            let csvContent = `\t\tकार्यालय संकुल केंद्र - ${sessionData.officeCenter}\t\t\n`;
+            csvContent += `\t\tशाला - ${sessionData.schoolName}\t\t\n`;
+            csvContent += `\t\tमिलेट बार/सोयापिनेट चक्की /प्रोटीन बार /मोरेंगा बार की जानकारी (दिनांक - ${sessionData.headerDate} की स्थिति में)\t\t\n\n`;
+            csvContent += `\t\tप्रपत्र -1\t\t\n\n`;
+            csvContent += `\t\tशाला स्तर पर संधारित अभिलेख\t\t\n\n`;
+            csvContent += "क्रमांक,दिनांक,लाभान्वित विद्यार्थियों का नाम,वितरण मात्रा,शेष\n";
+
+            // Adding entry rows
+            dataCollection.forEach((entry) => {
+                csvContent += `${entry.serialNumber},${entry.entryDate},${entry.beneficiaryName},${entry.distributionAmount},${entry.remaining}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            const timestamp = new Date().toISOString().replace(/[:.]/g, "");
+            link.href = URL.createObjectURL(blob);
+            link.download = `distribution_data_${timestamp}.csv`;
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Load session data on page refresh
+        window.onload = loadSessionData;
     </script>
 </body>
 </html>
