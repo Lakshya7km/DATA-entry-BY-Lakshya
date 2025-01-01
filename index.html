@@ -359,7 +359,7 @@
 
     <button id="downloadButton" class="hidden" onclick="downloadCSV()">Download CSV</button>
 
-    <script>
+<script>
     let dataCollection = [];
     let remainingQuantity = 0;
     let currentDate = "";
@@ -474,12 +474,18 @@
         const link = document.createElement("a");
         const timestamp = new Date().toISOString().replace(/[:.]/g, "");
         link.href = URL.createObjectURL(blob);
-        link.download = `distribution_data_${timestamp}.csv`;F
+        link.download = `distribution_data_${timestamp}.csv`;
         link.style.display = "none";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }Fst
+
+        // Save session data to localStorage again after CSV download
+        sessionData.entries = dataCollection;
+        localStorage.setItem("distributionSession", JSON.stringify(sessionData));
+    }
+
+
 </script>
 <div class="steps-instructions">
     <h2>मिलेट्स वितरण डेटा संग्रहण Guide</h2>
