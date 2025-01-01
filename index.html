@@ -464,7 +464,7 @@
         csvContent += `"मिलेट बार/सोयापिनेट चक्की /प्रोटीन बार /मोरेंगा बार की जानकारी (दिनांक - ${sessionData.headerDate} की स्थिति में)"\n\n`;
         csvContent += `"प्रपत्र -1"\n\n`;
         csvContent += `"शाला स्तर पर संधारित अभिलेख"\n\n`;
-        csvContent += `"क्रमांक","दिनांक","लाभान्वित विद्यार्थियों का नाम","वितरण मात्रा","शेष"\n`;
+        csvContent += `"क्रमांक","दिनांक (वर्ष-माह-दिन)","लाभान्वित विद्यार्थियों का नाम","वितरण मात्रा","शेष"\n`;
 
         dataCollection.forEach((entry) => {
             csvContent += `"${entry.serialNumber}","${entry.entryDate}","${entry.beneficiaryName}","${entry.distributionAmount}","${entry.remaining}"\n`;
